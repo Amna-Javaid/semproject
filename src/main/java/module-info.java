@@ -5,4 +5,6 @@ module com.example.semproject {
 
     opens com.example.semproject to javafx.fxml;
     exports com.example.semproject;
+
+
 }
