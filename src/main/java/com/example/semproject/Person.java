@@ -7,11 +7,12 @@ public class Person {
     String password;
     String email;
     boolean isVaccinated;
+    boolean Vaccinated2;
     int age;
     String mobileNumber;
     String sex;
 
-    public Person(String name, String cnic, String email, String password, int age, String mobileNumber, String sex, boolean isVaccinated) {
+    public Person(String name, String cnic, String email, String password, int age, String mobileNumber, String sex, boolean isVaccinated, boolean isVaccinated2) {
         this.name = name;
         this.cnic = cnic;
         this.email = email;
@@ -20,9 +21,11 @@ public class Person {
         this.mobileNumber = mobileNumber;
         this.sex = sex;
         this.isVaccinated = isVaccinated;
+        this.Vaccinated2= isVaccinated2;
+        int code;
     }
     public static Person signUp(String name, String cnic, String email, String password, int age, String mobileNumber, String sex) {
-        return new Person(name, cnic, email, password , age, mobileNumber, sex,false);
+        return new Person(name, cnic, email, password , age, mobileNumber, sex,false,false);
     }
 
     public String getName() {
@@ -55,5 +58,9 @@ public class Person {
 
     public String getSex() {
         return sex;
+    }
+
+    public boolean isVaccinated2() {
+        return Vaccinated2;
     }
 }
