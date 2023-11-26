@@ -599,7 +599,7 @@ public class HelloApplication extends Application {
 
     }
 
-//new coomit
+
 
 
 
@@ -1044,26 +1044,6 @@ public class HelloApplication extends Application {
             cnic.setFont(Font.font("times new roman",12));
             TextField codetext=new TextField();
 
-            codetext.setOnKeyReleased(event -> {
-                String enteredCNIC = codetext.getText();
-                boolean cnicFound = false;
-                Text v1 = new Text("Please enter the correct CNIC");
-                for (Person person : person) { // Assuming persons is your collection of Person objects
-                    if (person.cnic.equals(enteredCNIC) && !person.isVaccinated) {
-                        cnicFound = true;
-                        break;
-                    }
-                }
-                grid2.getChildren().remove(v1);
-
-                if (!cnicFound) {
-
-                    v1.setFont(Font.font("Times New Roman", 12));
-                    v1.setFill(Color.RED);
-                    grid2.add(v1, 0, 4);
-                }
-            });
-
             Text question=new Text("Do you want to get yourslf enrolled for vaccination");
             question.setFont(Font.font("times new roman",12));
             grid2.add(question,0,2);
@@ -1087,177 +1067,189 @@ public class HelloApplication extends Application {
 
             yesRadioButton.setOnAction(e->{
 
-                GridPane grid3=new GridPane();
-                Scene scene3=new Scene(grid3,900,650);
-                grid3.setPadding(new Insets(0,0,0,20));
-                grid3.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
+                String enteredCNIC = codetext.getText();
 
-                grid3.setHgap(20);
-                grid3.setVgap(20);
-
-                Text enrollement2=new Text("ENROLLENT FOR VACCINATION");
-                enrollement2.setFont(Font.font("times new roman",20));
-                grid3.add(enrollement2,0,0);
-                Text name=new Text("Name:");
-                name.setFont(Font.font("times new roman",15));
-                TextField name1=new TextField();
-
-                HBox h1=new HBox();
-                Text age=new Text("age:");
-                age.setFont(Font.font("times new roman",15));
-                TextField age1=new TextField();
-                h1.getChildren().addAll(age,age1);
-
-                HBox h2=new HBox();
-                Text city=new Text("City:");
-                city.setFont(Font.font("times new roman",15));
-                TextField city1=new TextField();
-                h2.getChildren().addAll(city,city1);
-
-                HBox h3=new HBox();
-                Text cnic2=new Text("CNIC:");
-                cnic2.setFont(Font.font("times new roman",15));
-                TextField codetext1=new TextField();
-                h3.getChildren().addAll(cnic2,codetext1);
-                VBox v1=new VBox();
-                v1.getChildren().addAll(h3,h1,h2);
-                v1.setSpacing(20);
-                Text gender=new Text("Gender:");
-                gender.setFont(Font.font("times new roman",15));
-                Text phone=new Text("Phone number:");
-                phone.setFont(Font.font("times new roman",15));
-                TextField phone1=new TextField();
-                Text address=new Text("Address:");
-                address.setFont(Font.font("times new roman",15));
-                TextField address1=new TextField();
-                Text text1=new Text("Select your nearest vaccination center:");
-                text1.setFont(Font.font("times new roman",15));
-                Button Select=new Button("Select");
-                HBox h5=new HBox();
-                h5.getChildren().addAll(text1,Select);
-                Select.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
-                Select.setTextFill(Color.WHITE);
-
-                RadioButton maleRadioButton=new RadioButton("Male");
-                RadioButton femaleRadioButton=new RadioButton("Female");
-                maleRadioButton.setFont(Font.font("times new roman",15));
-                femaleRadioButton.setFont(Font.font("times new roman",15));
-
-                ToggleGroup toggleGroup1=new ToggleGroup();
-                maleRadioButton.setToggleGroup(toggleGroup1);
-                femaleRadioButton.setToggleGroup(toggleGroup1);
-
-                VBox radioButtons2=new VBox(10); // You can adjust the spacing between buttons as needed
-                radioButtons2.getChildren().addAll(femaleRadioButton,maleRadioButton);
-
-
-
-
-                Button back=new Button("Back");
-                back.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
-                back.setTextFill(Color.WHITE);
-                grid3.add(back,0,11);
-
-                back.setOnAction(a->{
-                    stage.setScene(scene); // Set the scene to the initial scene (grid1)
-                    stage.show();
-                });
-
-                grid3.add(name,0,1);
-                grid3.add(name1,0,2);
-
-                grid3.add(v1,0,3);
-
-
-                grid3.add(address,0,4);
-                GridPane.setColumnSpan(address1,2);
-                grid3.add(address1,0,5);
-                grid3.add(phone,0,6);
-                GridPane.setColumnSpan(phone1,2);
-                grid3.add(phone1,0,7);
-
-                grid3.add(gender,0,8);
-                grid3.add(radioButtons2,0,9);
-                grid3.add(h5,0,10);
-
-
-                Select.setOnAction(x->{
-
-                    String data1=name1.getText();
-                    String data2=age1.getText();
-                    String data3=city1.getText();
-                    String data4=codetext1.getText();
-                    String data5=phone1.getText();
-                    String data6=address1.getText();
-
-                    if(data1.isEmpty() || data2.isEmpty() || data3.isEmpty() || data4.isEmpty() || data5.isEmpty() || data6.isEmpty() ){
-                        Text t1=new Text("Please fill all the text fields");
-                        t1.setFill(Color.RED);
-                        t1.setFont(Font.font("times new roman",15));
-                        grid3.add(t1,2,10);
-
+                for (Person person : person ) {
+                    if (person.cnic.equals(enteredCNIC) && person.isVaccinated) {
+                        Text v1 = new Text("Please enter the correct CNIC");
+                        grid2.add(v1, 0, 4);
                     }
-                    else {
-                        GridPane grid4 = new GridPane();
-                        Scene scene4 = new Scene(grid4, 900, 650);
-                        grid4.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
-                        grid4.setPadding(new Insets(10, 0, 0, 20));
+                    else if (person.cnic.equals(enteredCNIC) && !person.isVaccinated){
 
-                        HBox hb = new HBox();
-                        Image logoImage1 = new Image("img_2.png");
-                        ImageView logoImageView = new ImageView(logoImage1);
+                        GridPane grid3=new GridPane();
+                        Scene scene3=new Scene(grid3,900,650);
+                        grid3.setPadding(new Insets(0,0,0,20));
+                        grid3.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
 
-                        logoImageView.setFitWidth(100);
-                        logoImageView.setFitHeight(100);
+                        grid3.setHgap(20);
+                        grid3.setVgap(20);
 
-                        Text title2 = new Text("\nCOVID\nVACCINATION\nCENTER");
-                        title2.setFont(Font.font("Times New Roman", 20));
-                        title2.setFill(Color.DARKBLUE);
-                        title2.setTextAlignment(TextAlignment.CENTER);
-                        hb.getChildren().addAll(logoImageView, title2);
-                        hb.setSpacing(20);
-                        hb.setPadding(new Insets(10, 0, 0, 100));
-                        grid4.add(hb, 0, 0);
+                        Text enrollement2=new Text("ENROLLENT FOR VACCINATION");
+                        enrollement2.setFont(Font.font("times new roman",20));
+                        grid3.add(enrollement2,0,0);
+                        Text name=new Text("Name:");
+                        name.setFont(Font.font("times new roman",15));
+                        TextField name1=new TextField();
 
-                        Label cityLabel = new Label("Select your city");
+                        HBox h1=new HBox();
+                        Text age=new Text("age:");
+                        age.setFont(Font.font("times new roman",15));
+                        TextField age1=new TextField();
+                        h1.getChildren().addAll(age,age1);
 
-                        ComboBox<String> cityComboBox = new ComboBox<>();
-                        cityComboBox.getItems().addAll("Lahore", "Faisalabad", "sahiwal");
+                        HBox h2=new HBox();
+                        Text city=new Text("City:");
+                        city.setFont(Font.font("times new roman",15));
+                        TextField city1=new TextField();
+                        h2.getChildren().addAll(city,city1);
 
-                        cityComboBox.setOnAction(a -> {
-                            String selectedCity = cityComboBox.getSelectionModel().getSelectedItem();
-                            if (selectedCity != null && selectedCity.equals("Lahore")) {
+                        HBox h3=new HBox();
+                        Text cnic2=new Text("CNIC:");
+                        cnic2.setFont(Font.font("times new roman",15));
+                        TextField codetext1=new TextField();
+                        h3.getChildren().addAll(cnic2,codetext1);
+                        VBox v1=new VBox();
+                        v1.getChildren().addAll(h3,h1,h2);
+                        v1.setSpacing(20);
+                        Text gender=new Text("Gender:");
+                        gender.setFont(Font.font("times new roman",15));
+                        Text phone=new Text("Phone number:");
+                        phone.setFont(Font.font("times new roman",15));
+                        TextField phone1=new TextField();
+                        Text address=new Text("Address:");
+                        address.setFont(Font.font("times new roman",15));
+                        TextField address1=new TextField();
+                        Text text1=new Text("Select your nearest vaccination center:");
+                        text1.setFont(Font.font("times new roman",15));
+                        Button Select=new Button("Select");
+                        HBox h5=new HBox();
+                        h5.getChildren().addAll(text1,Select);
+                        Select.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
+                        Select.setTextFill(Color.WHITE);
 
-                                setupCenterTable(grid4, stage, centersList,data1,data2,data3,data4,data5,data6,scene);
+                        RadioButton maleRadioButton=new RadioButton("Male");
+                        RadioButton femaleRadioButton=new RadioButton("Female");
+                        maleRadioButton.setFont(Font.font("times new roman",15));
+                        femaleRadioButton.setFont(Font.font("times new roman",15));
 
-                            } else if (selectedCity != null && selectedCity.equals("Faisalabad")) {
+                        ToggleGroup toggleGroup1=new ToggleGroup();
+                        maleRadioButton.setToggleGroup(toggleGroup1);
+                        femaleRadioButton.setToggleGroup(toggleGroup1);
 
-                                setupCenterTable(grid4, stage, centersList2,data1,data2,data3,data4,data5,data6,scene);
+                        VBox radioButtons2=new VBox(10); // You can adjust the spacing between buttons as needed
+                        radioButtons2.getChildren().addAll(femaleRadioButton,maleRadioButton);
 
-                            } else if (selectedCity != null && selectedCity.equals("sahiwal")) {
 
-                                setupCenterTable(grid4, stage, centersList3,data1,data2,data3,data4,data5,data6,scene);
 
-                            }
+
+                        Button back=new Button("Back");
+                        back.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
+                        back.setTextFill(Color.WHITE);
+                        grid3.add(back,0,11);
+
+                        back.setOnAction(a->{
+                            stage.setScene(scene); // Set the scene to the initial scene (grid1)
+                            stage.show();
                         });
 
-                        VBox vbox = new VBox(10);
-                        vbox.getChildren().addAll(cityLabel, cityComboBox);
+                        grid3.add(name,0,1);
+                        grid3.add(name1,0,2);
 
-                        grid4.add(vbox, 0, 1);
+                        grid3.add(v1,0,3);
 
 
-                        grid4.setVgap(20);
-                        grid4.setHgap(20);
-                        stage.setScene(scene4);
+                        grid3.add(address,0,4);
+                        GridPane.setColumnSpan(address1,2);
+                        grid3.add(address1,0,5);
+                        grid3.add(phone,0,6);
+                        GridPane.setColumnSpan(phone1,2);
+                        grid3.add(phone1,0,7);
+
+                        grid3.add(gender,0,8);
+                        grid3.add(radioButtons2,0,9);
+                        grid3.add(h5,0,10);
+
+
+                        Select.setOnAction(x->{
+
+                            String data1=name1.getText();
+                            String data2=age1.getText();
+                            String data3=city1.getText();
+                            String data4=codetext1.getText();
+                            String data5=phone1.getText();
+                            String data6=address1.getText();
+
+                            if(data1.isEmpty() || data2.isEmpty() || data3.isEmpty() || data4.isEmpty() || data5.isEmpty() || data6.isEmpty() ){
+                                Text t1=new Text("Please fill all the text fields");
+                                t1.setFill(Color.RED);
+                                t1.setFont(Font.font("times new roman",15));
+                                grid3.add(t1,2,10);
+
+                            }
+                            else {
+                                GridPane grid4 = new GridPane();
+                                Scene scene4 = new Scene(grid4, 900, 650);
+                                grid4.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
+                                grid4.setPadding(new Insets(10, 0, 0, 20));
+
+                                HBox hb = new HBox();
+                                Image logoImage1 = new Image("img_2.png");
+                                ImageView logoImageView = new ImageView(logoImage1);
+
+                                logoImageView.setFitWidth(100);
+                                logoImageView.setFitHeight(100);
+
+                                Text title2 = new Text("\nCOVID\nVACCINATION\nCENTER");
+                                title2.setFont(Font.font("Times New Roman", 20));
+                                title2.setFill(Color.DARKBLUE);
+                                title2.setTextAlignment(TextAlignment.CENTER);
+                                hb.getChildren().addAll(logoImageView, title2);
+                                hb.setSpacing(20);
+                                hb.setPadding(new Insets(10, 0, 0, 100));
+                                grid4.add(hb, 0, 0);
+
+                                Label cityLabel = new Label("Select your city");
+
+                                ComboBox<String> cityComboBox = new ComboBox<>();
+                                cityComboBox.getItems().addAll("Lahore", "Faisalabad", "sahiwal");
+
+                                cityComboBox.setOnAction(a -> {
+                                    String selectedCity = cityComboBox.getSelectionModel().getSelectedItem();
+                                    if (selectedCity != null && selectedCity.equals("Lahore")) {
+
+                                        setupCenterTable(grid4, stage, centersList,data1,data2,data3,data4,data5,data6,scene);
+
+                                    } else if (selectedCity != null && selectedCity.equals("Faisalabad")) {
+
+                                        setupCenterTable(grid4, stage, centersList2,data1,data2,data3,data4,data5,data6,scene);
+
+                                    } else if (selectedCity != null && selectedCity.equals("sahiwal")) {
+
+                                        setupCenterTable(grid4, stage, centersList3,data1,data2,data3,data4,data5,data6,scene);
+
+                                    }
+                                });
+
+                                VBox vbox = new VBox(10);
+                                vbox.getChildren().addAll(cityLabel, cityComboBox);
+
+                                grid4.add(vbox, 0, 1);
+
+
+                                grid4.setVgap(20);
+                                grid4.setHgap(20);
+                                stage.setScene(scene4);
+                                stage.show();
+                            }
+
+                        });
+
+
+                        stage.setScene(scene3);
                         stage.show();
+
                     }
-
-                });
-
-
-                stage.setScene(scene3);
-                stage.show();
+                }
 
             });
             stage.setScene(scene2);
