@@ -23,20 +23,30 @@ import javafx.stage.Stage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class HelloApplication extends Application {
     ArrayList<Person> person = new ArrayList<>();
     GridPane grid1 = new GridPane();
-    Scene scene1 = new Scene(grid1, 500, 400, Color.LIGHTGRAY);
+    Scene sc1 = new Scene(grid1, 500, 400, Color.LIGHTGRAY);
     Management management=new Management();
     ArrayList<Center> centersList = management.centers;
     Center[] centersArray = centersList.toArray(new Center[0]);
     ArrayList<Center> centersList2 = management.centers2;
     ArrayList<Center> centersList3 = management.centers3;
+    int verificationCode;
+
+
+
+
+
 
 
     @Override
     public void start(Stage stage) throws IOException {
+
+
         Person person1 = new Person("John Doe", "12345678-90", "john.doe@gmail.com", "password123", 25, "1234567890", "Male", true);
         person.add(person1);
         Person person2 = new Person("Jane Smith", "98765432-10", "jane.smith@gmail.com", "securePass", 30, "9876543210", "Female", false);
@@ -55,8 +65,25 @@ public class HelloApplication extends Application {
         stage.setTitle(" Covid Vaccine Center");
 
 
-        // Add logo with title at the center in the first scene
-        addLogoWithCenteredTitle(grid1,"C:\\Users\\AIMS TECH\\IdeaProjects\\semproject\\src\\main\\resources\\img_2.png"  ,"Vaccine Center");
+        HBox b1=new HBox();
+        Image logoImage = new Image("img_2.png");
+        ImageView logoImageView = new ImageView(logoImage);
+
+        logoImageView.setFitWidth(100);
+        logoImageView.setFitHeight(100);
+        b1.getChildren().add(logoImageView);
+
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setPercentWidth(12);
+        grid1.getColumnConstraints().addAll(column1);
+
+        Text title2 = new Text("COVID\nVACCINATION\nCENTER");
+        title2.setFont(Font.font("Times New Roman", 20));
+        title2.setFill(Color.DARKBLUE);
+        title2.setTextAlignment(TextAlignment.CENTER);
+        b1.getChildren().add(title2);
+
+        grid1.add(b1,1,0);
 
         grid1.setPadding(new Insets(10, 10, 10, 10));
         GridPane.setMargin(grid1, new Insets(50, 0, 0, 0)); // Add top margin
@@ -117,28 +144,8 @@ public class HelloApplication extends Application {
         adminLogin.setOnAction(p -> adminlogin(stage));
         signUp.setOnAction(p -> signUp(stage));
 
-        stage.setScene(scene1);
+        stage.setScene(sc1);
         stage.show();
-    }
-
-    private void addLogoWithCenteredTitle(GridPane grid, String logoPath, String title) {
-        try {
-            Image logoImage = new Image(new FileInputStream(logoPath));
-            ImageView logoImageView = new ImageView(logoImage);
-            logoImageView.setFitWidth(100); // Adjust the width as needed
-            logoImageView.setFitHeight(100);
-            grid.add(logoImageView, 0, 0, 2, 1); // span 2 columns
-            GridPane.setHalignment(logoImageView, HPos.CENTER); // center horizontally
-
-            Text titleText = new Text(title);
-            titleText.setFont(Font.font("Times new Roman", 20));
-            titleText.setTextAlignment(TextAlignment.CENTER);
-            GridPane.setMargin(titleText, new Insets(20, 0, 0, 0));
-            grid.add(titleText, 0, 1, 2, 1); // span 2 columns
-            GridPane.setHalignment(titleText, HPos.CENTER); // center horizontally
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 
@@ -282,7 +289,7 @@ public class HelloApplication extends Application {
                         "-fx-text-fill: white;"
         );
         Button backButton = new Button("Back");
-        backButton.setOnAction(m -> stage.setScene(scene1)); // Set the appropriate scene here
+        backButton.setOnAction(m -> stage.setScene(sc1)); // Set the appropriate scene here
 
 
         backButton.setStyle(
@@ -407,7 +414,7 @@ public class HelloApplication extends Application {
         signUpGrid.setVgap(20);
         signUpGrid.setPadding(new Insets(0, 0, 0, 10));
         Button backButton = new Button("Back");
-        backButton.setOnAction(m -> stage.setScene(scene1)); // Set the appropriate scene here
+        backButton.setOnAction(m -> stage.setScene(sc1)); // Set the appropriate scene here
 
 
         backButton.setStyle(
@@ -519,6 +526,9 @@ public class HelloApplication extends Application {
 
         userList.setOnAction(p->{
             GridPane userListGrid = new GridPane();
+            userListGrid.setHgap(30);
+            userListGrid.setVgap(20);
+
             Scene userListScene = new Scene(userListGrid,600,500);
             // Create TableView
             TableView<Person> tableView = new TableView<>();
@@ -627,8 +637,8 @@ public class HelloApplication extends Application {
         }
         return false;
     }
-    public void setupCenterTable(GridPane grid4,Stage stage, ArrayList<Center> centersArray) {
-//
+    public void setupCenterTable(GridPane grid4,Stage stage, ArrayList<Center> centersArray,String data1,String data2,String data3,String data4,String data5,String data6,Scene scene) {
+
         TableView<Center> centerTable = new TableView<>();
         centerTable.setEditable(false);
 
@@ -660,7 +670,7 @@ public class HelloApplication extends Application {
                 addButton.setOnAction(event -> {
 
                     GridPane grid5 = new GridPane();
-                    Scene scene5 = new Scene(grid5, 600, 350);
+                    Scene scene5 = new Scene(grid5, 650, 500);
                     grid5.setPadding(new Insets(0,0,0,20));
                     grid5.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
                     grid5.setPadding(new Insets(20,0,0,20));
@@ -671,12 +681,37 @@ public class HelloApplication extends Application {
                     grid5.add(nametext,1,0);
 
                     Text time=new Text("Select suitable time to be vaccinated:");
-                    TextField time2=new TextField();
                     time.setFont(Font.font("times new roman",15));
 
-                    Text date=new Text("Select suitable date to be vaccinated:");
-                    TextField date2=new TextField();
-                    date.setFont(Font.font("times new roman",15));
+
+                    RadioButton firstRadioButton = new RadioButton("9am-12pm");
+                    RadioButton secondRadioButton = new RadioButton("1pm-4pm");
+                    RadioButton thirdRadioButton = new RadioButton("4pm-9pm");
+                    firstRadioButton.setFont(Font.font("times new roman",15));
+                    secondRadioButton.setFont(Font.font("times new roman",15));
+                    thirdRadioButton.setFont(Font.font("times new roman",15));
+
+                    ToggleGroup toggleGroup1 = new ToggleGroup();
+                    firstRadioButton.setToggleGroup(toggleGroup1);
+                    secondRadioButton.setToggleGroup(toggleGroup1);
+                    thirdRadioButton.setToggleGroup(toggleGroup1);
+
+                    VBox radioButtons3 = new VBox(10); // You can adjust the spacing between buttons as needed
+                    radioButtons3.getChildren().addAll(firstRadioButton,secondRadioButton,thirdRadioButton);
+
+
+                    VBox vbox = new VBox(10);
+                    Text timeText = new Text();
+                    Label selectDateLabel = new Label("Select suitable date to be vaccinated:");
+                    DatePicker datePicker = new DatePicker();
+                    datePicker.setOnAction(e -> {
+                        String selectedDate = datePicker.getValue().toString();
+                        timeText.setText("Date of vaccination: " + selectedDate);
+                    });
+
+                    vbox.getChildren().addAll(selectDateLabel, datePicker);
+
+
 
                     Button confirm=new Button("Confirm");
                     confirm.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
@@ -684,13 +719,116 @@ public class HelloApplication extends Application {
 
 
                     grid5.add(time,0,1);
-                    grid5.add(time2,1,1);
-                    grid5.add(date,0,2);
-                    grid5.add(date2,1,2);
+                    grid5.add(radioButtons3,1,1);
+                    grid5.add(vbox,0,2);
                     grid5.add(confirm,1,3);
 
                     grid5.setHgap(20);
                     grid5.setVgap(20);
+
+                    confirm.setOnAction(o->{
+
+                        GridPane gridv=new GridPane();
+                        Scene scenev=new Scene(gridv,900,650);
+                        gridv.setPadding(new Insets(0,0,0,20));
+
+                        Button back=new Button("Back");
+                        back.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
+                        back.setTextFill(Color.WHITE);
+                        gridv.add(back,0,12);
+
+                        back.setOnAction(a->{
+                            stage.setScene(scene); // Set the scene to the initial scene (grid1)
+                            stage.show();
+                        });
+
+                        gridv.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
+                        Random random = new Random();
+
+                        verificationCode = 1000 + random.nextInt(9000);
+
+                        for (Person person : person) {
+                            if (person.cnic.equals(data4)) {
+                                person.code=verificationCode;
+                            }
+                        }
+
+                        String vaccineName="";
+                        int age = Integer.parseInt(data2);
+
+                        if(age>5 && age<15){
+                            vaccineName="Moderna";
+                        }
+                        if(age>15 && age<30){
+                            vaccineName="Pfizer";
+                        }
+                        if(age>30 && age<50){
+                            vaccineName="Sinovac";
+                        }
+
+                        AtomicReference<String> selectedSlot = new AtomicReference<>(""); // Initialize the selectedSlot variable
+                        toggleGroup1.selectedToggleProperty().addListener((observable, oldVal, newVal) -> {
+                            if (toggleGroup1.getSelectedToggle() != null) {
+                                RadioButton selectedRadioButton = (RadioButton) toggleGroup1.getSelectedToggle();
+                                selectedSlot.set(selectedRadioButton.getText()); // Update the selectedSlot variable
+                            }
+                        });
+
+
+                        String timme2=timeText.getText();
+
+                        Text slipText = new Text("YOUR VACCINATION SLIP " );
+                        gridv.add(slipText,0,0);
+                        slipText.setFont(Font.font("times new Roman",20));
+                        slipText.setFill(Color.DARKBLUE);
+
+
+
+                        Text nameText = new Text("Your name: " +data1 );
+                        Text cnicText = new Text("Your CNIC: " +data4 );
+                        Text cityText = new Text("CITY: " + data3);
+                        Text ageText = new Text("Your Age: " + data2);
+                        Text phonetext = new Text("Your phone number: " + data5);
+                        Text addresstext = new Text("Your Address: " + data6);
+                        Text datetext2 = new Text("Slot of vaccination: " + selectedSlot);
+                        Text timeText4 = new Text("Date of vaccination: " +timme2);
+                        Text vaccineText = new Text("Vaccine: " + vaccineName);
+                        Text allocatedCenter = new Text("Allocated Vaccination Center: " + name);
+                        Text verificationText = new Text("Your Verification Code: " + verificationCode);
+
+                        nameText.setFont(Font.font("times new Roman",20));
+                        cnicText.setFont(Font.font("times new Roman",20));
+                        cityText.setFont(Font.font("times new Roman",20));
+                        ageText.setFont(Font.font("times new Roman",20));
+                        phonetext.setFont(Font.font("times new Roman",20));
+                        addresstext.setFont(Font.font("times new Roman",20));
+                        datetext2.setFont(Font.font("times new Roman",20));
+                        timeText4.setFont(Font.font("times new Roman",20));
+                        vaccineText.setFont(Font.font("times new Roman",20));
+                        allocatedCenter.setFont(Font.font("times new Roman",20));
+                        verificationText.setFont(Font.font("times new Roman",20));
+
+                        gridv.add(nameText,0,1);
+                        gridv.add(cnicText,0,2);
+                        gridv.add(cityText,0,3);
+                        gridv.add(ageText,0,4);
+                        gridv.add(phonetext,0,5);
+                        gridv.add(addresstext,0,6);
+                        gridv.add(datetext2,0,7);
+                        gridv.add(timeText4,0,8);
+                        gridv.add(vaccineText,0,9);
+                        gridv.add(allocatedCenter,0,10);
+                        gridv.add(verificationText,0,11);
+
+
+
+                        gridv.setHgap(20);
+                        gridv.setVgap(20);
+                        stage.setScene(scenev);
+                        stage.show();
+
+                    });
+
 
                     stage.setScene(scene5);
                     stage.show();
@@ -728,6 +866,7 @@ public class HelloApplication extends Application {
 
 
 
+
     public void loginInterface(Stage stage){
         GridPane grid1=new GridPane();
         Scene scene=new Scene(grid1,900,650);
@@ -757,6 +896,138 @@ public class HelloApplication extends Application {
         Button enroll1=new Button("Enroll");
         Button verify1=new Button("Verify");
 
+        verify1.setOnAction(d->{
+            GridPane grid7 = new GridPane();
+            Scene scene7 = new Scene(grid7, 600, 500);
+            grid7.setPadding(new Insets(0,0,0,20));
+            grid7.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
+            grid7.setPadding(new Insets(20,0,0,20));
+
+            grid7.setVgap(20);
+            grid7.setHgap(20);
+
+            Text verifycheck=new Text("=== VERIFY YOUR STATUS === ");
+            grid7.add(verifycheck,1,0);
+            verifycheck.setFont(Font.font("times new roman",15));
+            Text cnic=new Text("CNIC:");
+            cnic.setFont(Font.font("times new roman",12));
+            TextField cnictext=new TextField();
+            grid7.add(cnic,0,1);
+            grid7.add(cnictext,1,1);
+            Text code=new Text("CODE:");
+            cnic.setFont(Font.font("times new roman",12));
+            TextField codetext=new TextField();
+            grid7.add(code,0,2);
+            grid7.add(codetext,1,2);
+            Button verify2=new Button("Verify");
+            grid7.add(verify2,1,3);
+            Button back=new Button("Back");
+            back.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
+            back.setTextFill(Color.WHITE);
+            grid7.add(back,1,4);
+            back.setOnAction(l->{
+                stage.setScene(scene); // Set the scene to the initial scene (grid1)
+                stage.show();
+            });
+            verify2.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
+            verify2.setTextFill(Color.WHITE);
+            verify2.setOnAction(v->{
+                String CNIC=cnictext.getText();
+                String code2=codetext.getText();
+                int pCode2 = Integer.parseInt(code2);
+                boolean found = false;
+                for (Person person : person) {
+
+                    if (person.cnic.equals(CNIC) && person.code==pCode2) {
+                        Text vaccinated = new Text("You are verified ");
+                        vaccinated.setFont(Font.font("times new roman", 12));
+                        grid7.add(vaccinated, 1, 5);
+                        person.isVaccinated=true;
+                        found=true;
+                        break;
+                    }
+
+                }
+                if (!found) {
+                    Text notVaccinated = new Text("Invalid code or CNIC");
+                    notVaccinated.setFont(Font.font("Times New Roman", 12));
+                    grid7.add(notVaccinated, 1, 5);
+                }
+
+            });
+
+
+            stage.setScene(scene7);
+            stage.show();
+
+        });
+
+
+
+
+
+        status1.setOnAction(c->{
+
+            GridPane grid7 = new GridPane();
+            Scene scene7 = new Scene(grid7, 600, 500);
+            grid7.setPadding(new Insets(0,0,0,20));
+            grid7.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
+            grid7.setPadding(new Insets(20,0,0,20));
+
+            Text statuscheck=new Text("=== CHECK YOUR STATUS === ");
+            grid7.add(statuscheck,1,0);
+
+            statuscheck.setFont(Font.font("times new roman",15));
+            Text cnic=new Text("CNIC:");
+            cnic.setFont(Font.font("times new roman",12));
+            TextField cnictext=new TextField();
+            grid7.add(cnic,0,1);
+            grid7.add(cnictext,1,1);
+            Button check=new Button("Check Status");
+            grid7.add(check,1,2);
+            check.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
+            check.setTextFill(Color.WHITE);
+
+
+
+            check.setOnAction(h->{
+                String CNIC=cnictext.getText();
+
+                for (Person person : person) {
+                    if (person.cnic.equals(CNIC) && person.isVaccinated) {
+                        Text vaccinated = new Text("You are already vaccinated.");
+                        vaccinated.setFont(Font.font("times new roman", 12));
+                        grid7.add(vaccinated, 1, 4);
+                    }
+                    else if (person.cnic.equals(CNIC) && !person.isVaccinated) {
+
+                        Text notvaccinated=new Text("You are not vaccinated.");
+                        notvaccinated.setFont(Font.font("times new roman",12));
+                        grid7.add(notvaccinated,1,4);
+                    }
+                }
+
+            });
+
+
+            Button back=new Button("Back");
+            back.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
+            back.setTextFill(Color.WHITE);
+            grid7.add(back,1,3);
+
+            back.setOnAction(a->{
+                stage.setScene(scene); // Set the scene to the initial scene (grid1)
+                stage.show();
+            });
+
+            grid7.setHgap(20);
+            grid7.setVgap(20);
+
+            stage.setScene(scene7);
+            stage.show();
+
+        });
+
         enroll1.setOnAction(w->{
             GridPane grid2=new GridPane();
             Scene scene2=new Scene(grid2,400,300);
@@ -764,6 +1035,7 @@ public class HelloApplication extends Application {
 
             grid2.setHgap(20);
             grid2.setVgap(20);
+            grid2.setPadding(new Insets(10,0,0,20));
 
             Text enrollement=new Text("ENROLLENT FOR VACCINATION");
             grid2.add(enrollement,0,0);
@@ -771,21 +1043,35 @@ public class HelloApplication extends Application {
             Text cnic=new Text("CNIC:");
             cnic.setFont(Font.font("times new roman",12));
             TextField codetext=new TextField();
-            grid2.add(cnic,0,1);
-            grid2.add(codetext,1,1);
+
+            codetext.setOnKeyReleased(event -> {
+                String enteredCNIC = codetext.getText();
+                boolean cnicFound = false;
+                Text v1 = new Text("Please enter the correct CNIC");
+                for (Person person : person) { // Assuming persons is your collection of Person objects
+                    if (person.cnic.equals(enteredCNIC) && !person.isVaccinated) {
+                        cnicFound = true;
+                        break;
+                    }
+                }
+                grid2.getChildren().remove(v1);
+
+                if (!cnicFound) {
+
+                    v1.setFont(Font.font("Times New Roman", 12));
+                    v1.setFill(Color.RED);
+                    grid2.add(v1, 0, 4);
+                }
+            });
+
             Text question=new Text("Do you want to get yourslf enrolled for vaccination");
             question.setFont(Font.font("times new roman",12));
             grid2.add(question,0,2);
 
-            ColumnConstraints col1=new ColumnConstraints();
-            col1.setPercentWidth(30);
-            ColumnConstraints col2=new ColumnConstraints();
-            col2.setPercentWidth(70);
-            grid2.getColumnConstraints().addAll(col1,col2);
 
             HBox cnicBox=new HBox(10);
             cnicBox.getChildren().addAll(cnic,codetext);
-            grid2.add(cnicBox,0,1,2,1); //
+            grid2.add(cnicBox,0,1); //
 
 
             RadioButton yesRadioButton=new RadioButton("Yes");
@@ -865,6 +1151,8 @@ public class HelloApplication extends Application {
                 radioButtons2.getChildren().addAll(femaleRadioButton,maleRadioButton);
 
 
+
+
                 Button back=new Button("Back");
                 back.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
                 back.setTextFill(Color.WHITE);
@@ -873,65 +1161,6 @@ public class HelloApplication extends Application {
                 back.setOnAction(a->{
                     stage.setScene(scene); // Set the scene to the initial scene (grid1)
                     stage.show();
-                });
-
-                Select.setOnAction(x->{
-                    GridPane grid4=new GridPane();
-                    Scene scene4=new Scene(grid4,900,650);
-                    grid4.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
-                    grid4.setPadding(new Insets(10,0,0,20));
-
-                    HBox hb=new HBox();
-                    Image logoImage1=new Image("img_2.png");
-                    ImageView logoImageView=new ImageView(logoImage1);
-
-                    logoImageView.setFitWidth(100);
-                    logoImageView.setFitHeight(100);
-
-                    Text title2=new Text("\nCOVID\nVACCINATION\nCENTER");
-                    title2.setFont(Font.font("Times New Roman",20));
-                    title2.setFill(Color.DARKBLUE);
-                    title2.setTextAlignment(TextAlignment.CENTER);
-                    hb.getChildren().addAll(logoImageView,title2);
-                    hb.setSpacing(20);
-                    hb.setPadding(new Insets(10,0,0,100));
-                    grid4.add(hb,0,0);
-
-                    Label cityLabel=new Label("Select your city");
-
-                    ComboBox<String> cityComboBox=new ComboBox<>();
-                    cityComboBox.getItems().addAll("Lahore","Faisalabad","sahiwal");
-
-                    cityComboBox.setOnAction(a->{
-                        String selectedCity=cityComboBox.getSelectionModel().getSelectedItem();
-                        if(selectedCity!=null&&selectedCity.equals("Lahore")){
-
-                            setupCenterTable(grid4,stage,centersList);
-
-                        }
-                        else if(selectedCity!=null&&selectedCity.equals("Faisalabad")){
-
-                            setupCenterTable(grid4,stage,centersList2);
-
-                        }
-                        else if(selectedCity!=null&&selectedCity.equals("Sahiwal")){
-
-                            setupCenterTable(grid4,stage,centersList3);
-
-                        }
-                    });
-                    VBox vbox=new VBox(10);
-                    vbox.getChildren().addAll(cityLabel,cityComboBox);
-
-                    grid4.add(vbox,0,1);
-
-
-                    grid4.setVgap(20);
-                    grid4.setHgap(20);
-                    stage.setScene(scene4);
-                    stage.show();
-
-
                 });
 
                 grid3.add(name,0,1);
@@ -950,6 +1179,81 @@ public class HelloApplication extends Application {
                 grid3.add(gender,0,8);
                 grid3.add(radioButtons2,0,9);
                 grid3.add(h5,0,10);
+
+
+                Select.setOnAction(x->{
+
+                    String data1=name1.getText();
+                    String data2=age1.getText();
+                    String data3=city1.getText();
+                    String data4=codetext1.getText();
+                    String data5=phone1.getText();
+                    String data6=address1.getText();
+
+                    if(data1.isEmpty() || data2.isEmpty() || data3.isEmpty() || data4.isEmpty() || data5.isEmpty() || data6.isEmpty() ){
+                        Text t1=new Text("Please fill all the text fields");
+                        t1.setFill(Color.RED);
+                        t1.setFont(Font.font("times new roman",15));
+                        grid3.add(t1,2,10);
+
+                    }
+                    else {
+                        GridPane grid4 = new GridPane();
+                        Scene scene4 = new Scene(grid4, 900, 650);
+                        grid4.setStyle("-fx-border-color: darkblue; -fx-border-width: 5px;");
+                        grid4.setPadding(new Insets(10, 0, 0, 20));
+
+                        HBox hb = new HBox();
+                        Image logoImage1 = new Image("img_2.png");
+                        ImageView logoImageView = new ImageView(logoImage1);
+
+                        logoImageView.setFitWidth(100);
+                        logoImageView.setFitHeight(100);
+
+                        Text title2 = new Text("\nCOVID\nVACCINATION\nCENTER");
+                        title2.setFont(Font.font("Times New Roman", 20));
+                        title2.setFill(Color.DARKBLUE);
+                        title2.setTextAlignment(TextAlignment.CENTER);
+                        hb.getChildren().addAll(logoImageView, title2);
+                        hb.setSpacing(20);
+                        hb.setPadding(new Insets(10, 0, 0, 100));
+                        grid4.add(hb, 0, 0);
+
+                        Label cityLabel = new Label("Select your city");
+
+                        ComboBox<String> cityComboBox = new ComboBox<>();
+                        cityComboBox.getItems().addAll("Lahore", "Faisalabad", "sahiwal");
+
+                        cityComboBox.setOnAction(a -> {
+                            String selectedCity = cityComboBox.getSelectionModel().getSelectedItem();
+                            if (selectedCity != null && selectedCity.equals("Lahore")) {
+
+                                setupCenterTable(grid4, stage, centersList,data1,data2,data3,data4,data5,data6,scene);
+
+                            } else if (selectedCity != null && selectedCity.equals("Faisalabad")) {
+
+                                setupCenterTable(grid4, stage, centersList2,data1,data2,data3,data4,data5,data6,scene);
+
+                            } else if (selectedCity != null && selectedCity.equals("sahiwal")) {
+
+                                setupCenterTable(grid4, stage, centersList3,data1,data2,data3,data4,data5,data6,scene);
+
+                            }
+                        });
+
+                        VBox vbox = new VBox(10);
+                        vbox.getChildren().addAll(cityLabel, cityComboBox);
+
+                        grid4.add(vbox, 0, 1);
+
+
+                        grid4.setVgap(20);
+                        grid4.setHgap(20);
+                        stage.setScene(scene4);
+                        stage.show();
+                    }
+
+                });
 
 
                 stage.setScene(scene3);
@@ -994,6 +1298,11 @@ public class HelloApplication extends Application {
         back.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
         back.setTextFill(Color.WHITE);
         grid1.add(back,1,6);
+        back.setOnAction(l->{
+            stage.setScene(sc1); // Set the scene to the initial scene (grid1)
+            stage.show();
+        });
+
 
 
         HBox h1=new HBox();
@@ -1032,8 +1341,6 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
     }
-
-
 
     public static void main(String[] args) {
         launch();

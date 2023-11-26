@@ -3,6 +3,7 @@ package com.example.semproject;
 public class Person {
     String name;
     String cnic;
+    int code;
     String password;
     String email;
     boolean isVaccinated;
