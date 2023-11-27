@@ -1,12 +1,20 @@
 package com.example.semproject;
 
-import javafx.application.Application;
-import javafx.application.Platform;
+import java.io.File;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import javafx.animation.FadeTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.application.Application;
+import javafx.application.Platform;
+
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -19,13 +27,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+
+
 public class HelloApplication extends Application {
+
     ArrayList<Person> person = new ArrayList<>();
     GridPane grid1 = new GridPane();
     Scene sc1 = new Scene(grid1, 500, 400, Color.LIGHTGRAY);
@@ -36,28 +47,14 @@ public class HelloApplication extends Application {
     Center[] centersArray = centersList.toArray(new Center[0]);
     ArrayList<Center> centersList2 = management.centers2;
     ArrayList<Center> centersList3 = management.centers3;
-    private ObservableList<Vaccine> observableVaccineList;
     int verificationCode;
-
-
-
-
 
 
 
     @Override
     public void start(Stage stage) throws IOException {
 
-
-        Person person1 = new Person("John Doe", "12345678-90", "john.doe@gmail.com", "password123", 25, "1234567890", "Male", true,false);
-        person.add(person1);
-        Person person2 = new Person("Jane Smith", "98765432-10", "jane.smith@gmail.com", "securePass", 30, "9876543210", "Female", false,false);
-        person.add(person2);
-        Person person3 = new Person("Bob Johnson", "56789012-34", "bob.johnson@gmail.com", "pass123", 40, "5678901234", "Male", true,false);
-        person.add(person3);
-        Person person4 = new Person("Alice Williams", "34567890-12", "alice.williams@gmail.com", "myPassword", 28, "3456789012", "Female", false,false);
-        person.add(person4);
-
+        loadUserData();
 
         homeScreen(stage);
     }
@@ -145,18 +142,31 @@ public class HelloApplication extends Application {
         userLogin.setOnAction(p -> userlogin(stage));
         adminLogin.setOnAction(p -> adminlogin(stage));
         signUp.setOnAction(p -> signUp(stage));
+        fadeIn(grid1);
+
+        // Add fade-in animation to buttons
+        fadeIn(userLogin);
+        fadeIn(adminLogin);
+        fadeIn(signUp);
+
 
         stage.setScene(sc1);
         stage.show();
-    }
 
+    }
+    private void fadeIn(Node node) {
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(1000), node);
+        fadeTransition.setFromValue(0.0);
+        fadeTransition.setToValue(1.0);
+        fadeTransition.play();
+    }
 
     private void userlogin(Stage stage) {
         GridPane userLoginGrid = new GridPane();
         Scene scene2 = new Scene(userLoginGrid, 500, 500);
         Text email = new Text("Email Id:");
         Text password = new Text("Password:");
-
+        fadeIn(userLoginGrid);
 
         TextField t1 = new TextField();
 
@@ -238,7 +248,6 @@ public class HelloApplication extends Application {
 
 
 
-
         stage.setScene(scene2);
         stage.show();
 
@@ -251,6 +260,7 @@ public class HelloApplication extends Application {
         Scene scene4 = new Scene(adminLoginGrid, 500, 500);
         Text email = new Text("Email Id:");
         Text password = new Text("Password:");
+        fadeIn(adminLoginGrid);
 
         TextField t1 = new TextField();
         PasswordField p1 = new PasswordField();
@@ -358,6 +368,7 @@ public class HelloApplication extends Application {
     private void signUp(Stage stage) {
         GridPane signUpGrid = new GridPane();
         Scene scene5 = new Scene(signUpGrid, 500, 500, Color.LIGHTGRAY);
+        fadeIn(signUpGrid);
 
         Text titleText = new Text("Sign Up");
         titleText.setFont(Font.font("Times new Roman", 20));
@@ -452,6 +463,7 @@ public class HelloApplication extends Application {
                 // Add the new person to the list
                 person.add(newPerson);
                 resultText.setText("Sign Up Successful");
+                saveUserData();
             }
             confirmButton.setStyle(
                     "-fx-border-color: black;" +
@@ -475,11 +487,11 @@ public class HelloApplication extends Application {
         adminDashboardGrid.setPadding(new Insets(30, 10, 10, 10));
         adminDashboardGrid.setVgap(20);
         adminDashboardGrid.setHgap(20);
-
         // Create HBox for logo and title
         HBox logoTitleBox = new HBox(10);
         logoTitleBox.setAlignment(Pos.CENTER);
         logoTitleBox.setSpacing(20);
+        fadeIn(adminDashboardGrid);
 
         Image logoImage1 = new Image("img_2.png");
         ImageView logoImageView = new ImageView(logoImage1);
@@ -562,6 +574,8 @@ public class HelloApplication extends Application {
             userListGrid.setHgap(30);
             userListGrid.setVgap(20);
 
+
+
             Scene userListScene = new Scene(userListGrid,600,500);
             // Create TableView
             TableView<Person> tableView = new TableView<>();
@@ -579,15 +593,15 @@ public class HelloApplication extends Application {
             cnicColumn.setCellValueFactory(new PropertyValueFactory<>("cnic"));
 
             TableColumn<Person, Boolean> vaccinationStatusColumn = new TableColumn<>("Dose 1 Status");
-            vaccinationStatusColumn.setCellValueFactory(new PropertyValueFactory<>("vaccinated"));
+            vaccinationStatusColumn.setCellValueFactory(new PropertyValueFactory<>("vaccinated1"));
+
             TableColumn<Person, Boolean> vaccinationStatusColumn2 = new TableColumn<>("Dose 2 Status");
             vaccinationStatusColumn2.setCellValueFactory(new PropertyValueFactory<>("vaccinated2"));
 
-
             tableView.getColumns().addAll(nameColumn, emailColumn, mobileColumn, cnicColumn, vaccinationStatusColumn,vaccinationStatusColumn2);
 
-            ObservableList<Person> observablePersonList = FXCollections.observableArrayList(person);
-            tableView.setItems(observablePersonList);
+            ObservableList<Person> observableUserList = FXCollections.observableArrayList(person);
+            tableView.setItems(observableUserList);
 
             userListGrid.add(new Region(), 0, 2);
 
@@ -638,7 +652,11 @@ public class HelloApplication extends Application {
     public void centerList(Stage stage) {
         GridPane centerListGrid = new GridPane();
         Scene centerListScene = new Scene(centerListGrid, 800, 600);
+        fadeIn(centerListGrid);
 
+        centerListGrid.setVgap(30);
+        centerListGrid.setHgap(20);
+        centerListGrid.setPadding(new Insets(0,0,0,30));
         // ComboBox for selecting the city
         Label cityLabel = new Label("Select City:");
         ComboBox<String> cityComboBox = new ComboBox<>();
@@ -842,10 +860,12 @@ public class HelloApplication extends Application {
         List<Vaccine> vaccines = Arrays.asList(
                 new Vaccine("Pfizer", 50),
                 new Vaccine(" Moderna", 30),
-                new Vaccine(" Novavax", 20)
+                new Vaccine(" Novavax", 20),
+                new Vaccine(" Sinovac", 40),
+                new Vaccine(" Sinofam", 20)
         );
 
-        observableVaccineList = FXCollections.observableArrayList(vaccines);
+        ObservableList<Vaccine> observableVaccineList = FXCollections.observableArrayList(vaccines);
         vaccineTable.setItems(observableVaccineList);
 
         Button backButton2 = new Button("Back");
@@ -893,19 +913,19 @@ public class HelloApplication extends Application {
 
             result.ifPresent(buttonText -> {
 
-                    String vaccineName = nameField.getText();
-                    int stock = Integer.parseInt(stockField.getText());
+                String vaccineName = nameField.getText();
+                int stock = Integer.parseInt(stockField.getText());
 
-                    if (vaccineName.isEmpty() || stock < 0) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Error");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Please fill in all fields and ensure stock is non-negative");
-                        alert.showAndWait();
-                    } else {
-                        Vaccine newVaccine = new Vaccine(vaccineName, stock);
-                        observableVaccineList.add(newVaccine);
-                    }
+                if (vaccineName.isEmpty() || stock < 0) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please fill in all fields and ensure stock is non-negative");
+                    alert.showAndWait();
+                } else {
+                    Vaccine newVaccine = new Vaccine(vaccineName, stock);
+                    observableVaccineList.add(newVaccine);
+                }
 
             });
         });
@@ -920,12 +940,6 @@ public class HelloApplication extends Application {
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);" +
                         "-fx-text-fill: white;"
         );
-        vaccineTable.setEditable(true);
-        vaccineTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Constrain column resizing
-        vaccineTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); // Enable multiple selections
-
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> throwable.printStackTrace());
-
 
         vaccineGrid.add(vaccineTable, 1, 3, 4, 1); // Span 4 columns
         vaccineGrid.setVgap(20);
@@ -946,10 +960,14 @@ public class HelloApplication extends Application {
     }
 
 
+
+
+
+
     public boolean checkVaccinationStatus(String cnic) {
         for (Person person : person) {
             if (person.cnic.equals(cnic)) {
-                if(person.isVaccinated) {
+                if(person.isVaccinated1) {
                     return true;
                 }
             }
@@ -1277,7 +1295,7 @@ public class HelloApplication extends Application {
                         Text vaccinated = new Text("You are verified ");
                         vaccinated.setFont(Font.font("times new roman", 12));
                         grid7.add(vaccinated, 1, 5);
-                        person.isVaccinated=true;
+                        person.isVaccinated1=true;
                         found=true;
                         break;
                     }
@@ -1329,12 +1347,19 @@ public class HelloApplication extends Application {
                 String CNIC=cnictext.getText();
 
                 for (Person person : person) {
-                    if (person.cnic.equals(CNIC) && person.isVaccinated) {
-                        Text vaccinated = new Text("You are already vaccinated.");
+                    if (person.cnic.equals(CNIC) && person.isVaccinated1 &&  !person.isVaccinated2) {
+                        Text vaccinated = new Text("You are already vaccinated with first dose .");
                         vaccinated.setFont(Font.font("times new roman", 12));
                         grid7.add(vaccinated, 1, 4);
+
                     }
-                    else if (person.cnic.equals(CNIC) && !person.isVaccinated) {
+                    else if (person.cnic.equals(CNIC) && person.isVaccinated2 && person.isVaccinated1 ) {
+                        Text vaccinated = new Text("You are already vaccinated with both dose .");
+                        vaccinated.setFont(Font.font("times new roman", 12));
+                        grid7.add(vaccinated, 1, 4);
+
+                    }
+                    else if (person.cnic.equals(CNIC) && !person.isVaccinated1 && !person.isVaccinated2) {
 
                         Text notvaccinated=new Text("You are not vaccinated.");
                         notvaccinated.setFont(Font.font("times new roman",12));
@@ -1405,11 +1430,11 @@ public class HelloApplication extends Application {
                 String enteredCNIC = codetext.getText();
 
                 for (Person person : person ) {
-                    if (person.cnic.equals(enteredCNIC) && person.isVaccinated) {
+                    if (person.cnic.equals(enteredCNIC) && person.isVaccinated1) {
                         Text v1 = new Text("Please enter the correct CNIC");
                         grid2.add(v1, 0, 4);
                     }
-                    else if (person.cnic.equals(enteredCNIC) && !person.isVaccinated){
+                    else if (person.cnic.equals(enteredCNIC) && !person.isVaccinated1){
 
                         GridPane grid3=new GridPane();
                         Scene scene3=new Scene(grid3,900,650);
@@ -1473,8 +1498,6 @@ public class HelloApplication extends Application {
 
                         VBox radioButtons2=new VBox(10); // You can adjust the spacing between buttons as needed
                         radioButtons2.getChildren().addAll(femaleRadioButton,maleRadioButton);
-
-
 
 
                         Button back=new Button("Back");
@@ -1668,6 +1691,46 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
     }
+    private static final String USER_DATA_FILE = "src/main/resources/user_data.txt"; // Replace with your file path
+
+    private void loadUserData() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(USER_DATA_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] userData = line.split(";");
+                if (userData.length == 9) {
+                    Person newUser = new Person(userData[0], userData[1], userData[2], userData[3],
+                            Integer.parseInt(userData[4]), userData[5], userData[6],
+                            Boolean.parseBoolean(userData[7]), Boolean.parseBoolean(userData[8]));
+                    person.add(newUser);
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveUserData() {
+        File file = new File(USER_DATA_FILE);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (Person p : person) {
+                String userData = String.format("%s;%s;%s;%s;%d;%s;%s;%b;%b\n",
+                        p.getName(), p.getCnic(), p.getEmail(), p.getPassword(), p.getAge(),
+                        p.getMobileNumber(), p.getSex(), p.isVaccinated1(), p.isVaccinated2());
+                writer.write(userData);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        saveUserData(); // Save user data when the application stops
+    }
+
 
     public static void main(String[] args) {
         launch();
