@@ -22,14 +22,15 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class HelloApplication extends Application {
     ArrayList<Person> person = new ArrayList<>();
     GridPane grid1 = new GridPane();
     Scene sc1 = new Scene(grid1, 500, 400, Color.LIGHTGRAY);
+    GridPane adminDashboardGrid = new GridPane();
+    Scene adminDashboardScene = new Scene(adminDashboardGrid, 500, 500);
     Management management=new Management();
     ArrayList<Center> centersList = management.centers;
     Center[] centersArray = centersList.toArray(new Center[0]);
@@ -47,13 +48,13 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
 
 
-        Person person1 = new Person("John Doe", "12345678-90", "john.doe@gmail.com", "password123", 25, "1234567890", "Male", true);
+        Person person1 = new Person("John Doe", "12345678-90", "john.doe@gmail.com", "password123", 25, "1234567890", "Male", false,false);
         person.add(person1);
-        Person person2 = new Person("Jane Smith", "98765432-10", "jane.smith@gmail.com", "securePass", 30, "9876543210", "Female", false);
+        Person person2 = new Person("Jane Smith", "98765432-10", "jane.smith@gmail.com", "securePass", 30, "9876543210", "Female", false,false);
         person.add(person2);
-        Person person3 = new Person("Bob Johnson", "56789012-34", "bob.johnson@gmail.com", "pass123", 40, "5678901234", "Male", true);
+        Person person3 = new Person("Bob Johnson", "56789012-34", "bob.johnson@gmail.com", "pass123", 40, "5678901234", "Male", false,false);
         person.add(person3);
-        Person person4 = new Person("Alice Williams", "34567890-12", "alice.williams@gmail.com", "myPassword", 28, "3456789012", "Female", false);
+        Person person4 = new Person("Alice Williams", "34567890-12", "alice.williams@gmail.com", "myPassword", 28, "3456789012", "Female", false,false);
         person.add(person4);
 
 
@@ -469,8 +470,7 @@ public class HelloApplication extends Application {
         stage.show();
     }
     public void adminDashboard(Stage stage) {
-        GridPane adminDashboardGrid = new GridPane();
-        Scene adminDashboardScene = new Scene(adminDashboardGrid, 500, 500);
+
         adminDashboardGrid.setPadding(new Insets(30, 10, 10, 10));
         adminDashboardGrid.setVgap(20);
         adminDashboardGrid.setHgap(20);
@@ -515,12 +515,43 @@ public class HelloApplication extends Application {
                         +
                         "-fx-text-fill: white;"
         );
+        Button addVaccineButton = new Button("Add Vaccine");
+        addVaccineButton.setStyle(
+                "-fx-border-color: black;" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 5px;" +
+                        "-fx-background-color: blue;" +
+                        "-fx-padding: 10px;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);"
+                        +
+                        "-fx-text-fill: white;"
+        );
+        Button backButton2 = new Button("Back");
+        backButton2.setPrefHeight(30);
+        backButton2.setPrefWidth(100);
+        backButton2.setOnAction(e -> stage.setScene(sc1)); // Set the appropriate scene here
+
+        backButton2.setStyle(
+                "-fx-border-color: black;" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 5px;" +
+                        "-fx-background-color: blue;" +
+                        "-fx-padding: 10px;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);" +
+                        "-fx-text-fill: white;"
+        );
+
+        addVaccineButton.setPrefHeight(30);
+        addVaccineButton.setPrefWidth(100);
         userList.setPrefHeight(30);
         userList.setPrefWidth(100);
         centerInfo.setPrefHeight(30);
         centerInfo.setPrefWidth(100);
         adminDashboardGrid.add(userList, 1, 3);
         adminDashboardGrid.add(centerInfo, 2, 3);
+        adminDashboardGrid.add(addVaccineButton, 3, 3);
+        adminDashboardGrid.add(backButton2, 4, 3);
+
         adminDashboardGrid.setVgap(20);
 
 
@@ -545,10 +576,14 @@ public class HelloApplication extends Application {
             TableColumn<Person, String> cnicColumn = new TableColumn<>("CNIC");
             cnicColumn.setCellValueFactory(new PropertyValueFactory<>("cnic"));
 
-            TableColumn<Person, Boolean> vaccinationStatusColumn = new TableColumn<>("Vaccination Status");
-            vaccinationStatusColumn.setCellValueFactory(new PropertyValueFactory<>("vaccinated"));
+            TableColumn<Person, Boolean> vaccinationStatusColumn = new TableColumn<>("Dose 1 Status");
+            vaccinationStatusColumn.setCellValueFactory(new PropertyValueFactory<>("vaccinated1"));
 
-            tableView.getColumns().addAll(nameColumn, emailColumn, mobileColumn, cnicColumn, vaccinationStatusColumn);
+            TableColumn<Person, Boolean> vaccinationStatusColumn2 = new TableColumn<>("Dose 2 Status");
+            vaccinationStatusColumn2.setCellValueFactory(new PropertyValueFactory<>("vaccinated2"));
+
+
+            tableView.getColumns().addAll(nameColumn, emailColumn, mobileColumn, cnicColumn, vaccinationStatusColumn,vaccinationStatusColumn2);
 
             ObservableList<Person> observablePersonList = FXCollections.observableArrayList(person);
             tableView.setItems(observablePersonList);
@@ -590,12 +625,321 @@ public class HelloApplication extends Application {
         centerInfo.setOnAction(p->{
             centerList(stage);
         });
+        addVaccineButton.setOnAction(p->{
+            vaccineListInfo(stage);
+        });
+
 
 
         stage.setScene(adminDashboardScene);
         stage.show();
     }
-    public void centerList( Stage stage){
+    public void centerList(Stage stage) {
+        GridPane centerListGrid = new GridPane();
+        Scene centerListScene = new Scene(centerListGrid, 800, 600);
+
+        centerListGrid.setVgap(30);
+        centerListGrid.setHgap(20);
+        centerListGrid.setPadding(new Insets(0,0,0,30));
+        // ComboBox for selecting the city
+        Label cityLabel = new Label("Select City:");
+        ComboBox<String> cityComboBox = new ComboBox<>();
+        cityComboBox.getItems().addAll("All Cities", "Lahore", "Faisalabad", "Sahiwal");
+        cityComboBox.setValue("All Cities"); // Default selection
+
+        // TableView for displaying centers
+        TableView<Center> centerTable = new TableView<>();
+
+        TableColumn<Center, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameColumn.setMinWidth(50);
+
+        TableColumn<Center, String> pincodeColumn = new TableColumn<>("Pincode");
+        pincodeColumn.setCellValueFactory(new PropertyValueFactory<>("pincode"));
+        pincodeColumn.setMinWidth(50);
+
+        TableColumn<Center, String> locationColumn = new TableColumn<>("Location");
+        locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+        locationColumn.setMinWidth(50);
+
+        TableColumn<Center, Integer> serialNumberColumn = new TableColumn<>("Serial Number");
+        serialNumberColumn.setCellValueFactory(new PropertyValueFactory<>("serialNumber"));
+        serialNumberColumn.setMinWidth(50);
+
+        centerTable.getColumns().addAll(serialNumberColumn, nameColumn, pincodeColumn, locationColumn);
+        Button backButton = new Button("Back");
+        backButton.setPrefHeight(30);
+        backButton.setPrefWidth(100);
+        backButton.setOnAction(e -> stage.setScene(adminDashboardScene)); // Set the appropriate scene here
+
+        backButton.setStyle(
+                "-fx-border-color: black;" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 5px;" +
+                        "-fx-background-color: blue;" +
+                        "-fx-padding: 10px;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);" +
+                        "-fx-text-fill: white;"
+        );
+
+
+        // Button for adding a new center
+        Button addCenterButton = new Button("Add Center");
+        addCenterButton.setStyle(
+                "-fx-border-color: black;" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 5px;" +
+                        "-fx-background-color: blue;" +
+                        "-fx-padding: 10px;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);" +
+                        "-fx-text-fill: white;"
+        );
+
+        addCenterButton.setOnAction(event -> {
+            String selectedCity = cityComboBox.getValue();
+
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Add Center");
+            dialog.setHeaderText("Enter Center Details");
+
+            GridPane dialogGrid = new GridPane();
+            dialogGrid.setHgap(10);
+            dialogGrid.setVgap(10);
+
+            TextField nameField = new TextField();
+            nameField.setPromptText("Name");
+
+            TextField pincodeField = new TextField();
+            pincodeField.setPromptText("Pincode");
+
+            TextField locationField = new TextField();
+            locationField.setPromptText("Location");
+
+            TextField serialField = new TextField();
+            locationField.setPromptText("Serial Number");
+
+
+
+            dialogGrid.add(new Label("Name:"), 0, 0);
+            dialogGrid.add(nameField, 1, 0);
+            dialogGrid.add(new Label("Pincode:"), 0, 1);
+            dialogGrid.add(pincodeField, 1, 1);
+            dialogGrid.add(new Label("Location:"), 0, 2);
+            dialogGrid.add(locationField, 1, 2);
+            dialogGrid.add(new Label("SerialNumber:"), 0, 3);
+            dialogGrid.add(serialField, 1, 3);
+
+            dialog.getDialogPane().setContent(dialogGrid);
+
+            Optional<String> result= dialog.showAndWait();
+
+            result.ifPresent(buttonType -> {
+                String name = nameField.getText();
+                String pincode = pincodeField.getText();
+                String location = locationField.getText();
+                int serialNo = Integer.parseInt(serialField.getText());
+
+
+                if (name.isEmpty() || pincode.isEmpty() || location.isEmpty()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please fill in all fields");
+                    alert.showAndWait();
+                } else {
+                    // Add the new center to the combined list
+                    Center newCenter = new Center(name, pincode, location,serialNo);
+                    ObservableList<Center> combinedList = centerTable.getItems();
+                    combinedList.add(newCenter);
+
+                    // Add the new center to the respective city's list
+                    switch (selectedCity) {
+                        case "Lahore":
+                            centersList.add(newCenter);
+                            break;
+                        case "Faisalabad":
+                            centersList2.add(newCenter);
+                            break;
+                        case "Sahiwal":
+                            centersList3.add(newCenter);
+                            break;
+
+                    }
+
+                    // Update the tables
+                    updateCenterTable(centerTable, cityComboBox.getValue());
+                }
+
+            });
+        });
+
+        // Update the tables when the city selection changes
+        cityComboBox.setOnAction(event -> updateCenterTable(centerTable, cityComboBox.getValue()));
+
+        centerTable.setPlaceholder(new Text("No data available")); // Set placeholder text when the table is empty
+        centerTable.setEditable(true);
+        centerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Constrain column resizing
+        centerTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); // Enable multiple selections
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> throwable.printStackTrace());
+
+        serialNumberColumn.setPrefWidth(50);
+        nameColumn.setPrefWidth(200);
+        pincodeColumn.setPrefWidth(100);
+        locationColumn.setPrefWidth(250);
+
+        // Add components to the grid
+        centerListGrid.add(cityLabel, 0, 0);
+        centerListGrid.add(cityComboBox, 1, 0);
+        centerListGrid.add(centerTable, 0, 1, 2, 1); // Span the table across two columns
+        centerListGrid.add(addCenterButton, 1, 2);
+        centerListGrid.add(backButton, 2, 2);
+        centerListGrid.setHgap(20);
+        centerListGrid.setVgap(30);
+
+        stage.setScene(centerListScene);
+        stage.show();
+    }
+
+    private void updateCenterTable(TableView<Center> centerTable, String selectedCity) {
+        List<Center> selectedList;
+        switch (selectedCity) {
+            case "All Cities":
+                selectedList = new ArrayList<>(centersList);
+                selectedList.addAll(centersList2);
+                selectedList.addAll(centersList3);
+                break;
+            case "Lahore":
+                selectedList = new ArrayList<>(centersList);
+                break;
+            case "Faisalabad":
+                selectedList = new ArrayList<>(centersList2);
+                break;
+            case "Sahiwal":
+                selectedList = new ArrayList<>(centersList3);
+                break;
+            default:
+                selectedList = new ArrayList<>(); // Handle other cases as needed
+        }
+
+        ObservableList<Center> observableCenterList = FXCollections.observableArrayList(selectedList);
+        centerTable.setItems(observableCenterList);
+    }
+    public void vaccineListInfo(Stage stage){
+        GridPane vaccineGrid = new GridPane();
+        Scene vaccineScene = new Scene(vaccineGrid, 600, 500);
+
+        // Create TableView for vaccines
+        TableView<Vaccine> vaccineTable = new TableView<>();
+
+        TableColumn<Vaccine, String> nameColumn = new TableColumn<>("Vaccine Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<Vaccine, Integer> stockColumn = new TableColumn<>("Stock");
+        stockColumn.setCellValueFactory(new PropertyValueFactory<>("stock"));
+
+        vaccineTable.getColumns().addAll(nameColumn, stockColumn);
+
+        // Add existing vaccines to the table
+        List<Vaccine> vaccines = Arrays.asList(
+                new Vaccine("Pfizer", 50),
+                new Vaccine(" Moderna", 30),
+                new Vaccine(" Novavax", 20),
+                 new Vaccine(" Sinovac", 40),
+        new Vaccine(" Sinofam", 20)
+        );
+
+        ObservableList<Vaccine> observableVaccineList = FXCollections.observableArrayList(vaccines);
+        vaccineTable.setItems(observableVaccineList);
+
+        Button backButton2 = new Button("Back");
+        backButton2.setPrefHeight(30);
+        backButton2.setPrefWidth(100);
+        backButton2.setOnAction(e -> stage.setScene(adminDashboardScene)); // Set the appropriate scene here
+
+        backButton2.setStyle(
+                "-fx-border-color: black;" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 5px;" +
+                        "-fx-background-color: blue;" +
+                        "-fx-padding: 10px;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);" +
+                        "-fx-text-fill: white;"
+        );
+
+        // Add vaccine button functionality
+        Button addVaccineButton2 = new Button("Add Vaccine");
+        addVaccineButton2.setPrefHeight(30);
+        addVaccineButton2.setPrefWidth(150);
+        addVaccineButton2.setOnAction(e -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Add Vaccine");
+            dialog.setHeaderText("Enter Vaccine Details");
+
+            GridPane dialogGrid = new GridPane();
+            dialogGrid.setHgap(10);
+            dialogGrid.setVgap(10);
+
+            TextField nameField = new TextField();
+            nameField.setPromptText("Vaccine Name");
+
+            TextField stockField = new TextField();
+            stockField.setPromptText("Stock");
+
+            dialogGrid.add(new Label("Vaccine Name:"), 0, 0);
+            dialogGrid.add(nameField, 1, 0);
+            dialogGrid.add(new Label("Stock:"), 0, 1);
+            dialogGrid.add(stockField, 1, 1);
+
+            dialog.getDialogPane().setContent(dialogGrid);
+
+            Optional<String> result = dialog.showAndWait();
+
+            result.ifPresent(buttonText -> {
+
+                String vaccineName = nameField.getText();
+                int stock = Integer.parseInt(stockField.getText());
+
+                if (vaccineName.isEmpty() || stock < 0) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please fill in all fields and ensure stock is non-negative");
+                    alert.showAndWait();
+                } else {
+                    Vaccine newVaccine = new Vaccine(vaccineName, stock);
+                    observableVaccineList.add(newVaccine);
+                }
+
+            });
+        });
+
+        // Style the "Add Vaccine" button
+        addVaccineButton2.setStyle(
+                "-fx-border-color: black;" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 5px;" +
+                        "-fx-background-color: blue;" +
+                        "-fx-padding: 10px;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);" +
+                        "-fx-text-fill: white;"
+        );
+
+        vaccineGrid.add(vaccineTable, 1, 3, 4, 1); // Span 4 columns
+        vaccineGrid.setVgap(20);
+        vaccineGrid.setHgap(20);
+
+        // Add spacer between the table and the buttons
+        vaccineGrid.add(new Region(), 1, 9);
+        vaccineGrid.add(addVaccineButton2, 1, 8);
+
+        // Add "Back" button
+        vaccineGrid.add(backButton2, 2, 8);
+
+
+        stage.setScene(vaccineScene);
+        stage.show();
+
 
     }
 
@@ -607,7 +951,7 @@ public class HelloApplication extends Application {
     public boolean checkVaccinationStatus(String cnic) {
         for (Person person : person) {
             if (person.cnic.equals(cnic)) {
-                if(person.isVaccinated) {
+                if(person.isVaccinated1) {
                     return true;
                 }
             }
@@ -790,7 +1134,6 @@ public class HelloApplication extends Application {
                         Text ageText = new Text("Your Age: " + data2);
                         Text phonetext = new Text("Your phone number: " + data5);
                         Text addresstext = new Text("Your Address: " + data6);
-                        Text datetext2 = new Text("Slot of vaccination: " + selectedSlot);
                         Text timeText4 = new Text("Date of vaccination: " +timme2);
                         Text vaccineText = new Text("Vaccine: " + vaccineName);
                         Text allocatedCenter = new Text("Allocated Vaccination Center: " + name);
@@ -802,7 +1145,6 @@ public class HelloApplication extends Application {
                         ageText.setFont(Font.font("times new Roman",20));
                         phonetext.setFont(Font.font("times new Roman",20));
                         addresstext.setFont(Font.font("times new Roman",20));
-                        datetext2.setFont(Font.font("times new Roman",20));
                         timeText4.setFont(Font.font("times new Roman",20));
                         vaccineText.setFont(Font.font("times new Roman",20));
                         allocatedCenter.setFont(Font.font("times new Roman",20));
@@ -814,11 +1156,11 @@ public class HelloApplication extends Application {
                         gridv.add(ageText,0,4);
                         gridv.add(phonetext,0,5);
                         gridv.add(addresstext,0,6);
-                        gridv.add(datetext2,0,7);
-                        gridv.add(timeText4,0,8);
-                        gridv.add(vaccineText,0,9);
-                        gridv.add(allocatedCenter,0,10);
-                        gridv.add(verificationText,0,11);
+
+                        gridv.add(timeText4,0,7);
+                        gridv.add(vaccineText,0,8);
+                        gridv.add(allocatedCenter,0,9);
+                        gridv.add(verificationText,0,10);
 
 
 
@@ -861,11 +1203,6 @@ public class HelloApplication extends Application {
         locationColumn.setPrefWidth(250);
 
     }
-
-
-
-
-
 
     public void loginInterface(Stage stage){
         GridPane grid1=new GridPane();
@@ -942,7 +1279,7 @@ public class HelloApplication extends Application {
                         Text vaccinated = new Text("You are verified ");
                         vaccinated.setFont(Font.font("times new roman", 12));
                         grid7.add(vaccinated, 1, 5);
-                        person.isVaccinated=true;
+                        person.isVaccinated1=true;
                         found=true;
                         break;
                     }
@@ -994,12 +1331,12 @@ public class HelloApplication extends Application {
                 String CNIC=cnictext.getText();
 
                 for (Person person : person) {
-                    if (person.cnic.equals(CNIC) && person.isVaccinated) {
+                    if (person.cnic.equals(CNIC) && person.isVaccinated1) {
                         Text vaccinated = new Text("You are already vaccinated.");
                         vaccinated.setFont(Font.font("times new roman", 12));
                         grid7.add(vaccinated, 1, 4);
                     }
-                    else if (person.cnic.equals(CNIC) && !person.isVaccinated) {
+                    else if (person.cnic.equals(CNIC) && !person.isVaccinated1) {
 
                         Text notvaccinated=new Text("You are not vaccinated.");
                         notvaccinated.setFont(Font.font("times new roman",12));
@@ -1070,11 +1407,11 @@ public class HelloApplication extends Application {
                 String enteredCNIC = codetext.getText();
 
                 for (Person person : person ) {
-                    if (person.cnic.equals(enteredCNIC) && person.isVaccinated) {
+                    if (person.cnic.equals(enteredCNIC) && person.isVaccinated1) {
                         Text v1 = new Text("Please enter the correct CNIC");
                         grid2.add(v1, 0, 4);
                     }
-                    else if (person.cnic.equals(enteredCNIC) && !person.isVaccinated){
+                    else if (person.cnic.equals(enteredCNIC) && !person.isVaccinated1){
 
                         GridPane grid3=new GridPane();
                         Scene scene3=new Scene(grid3,900,650);
@@ -1333,6 +1670,9 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
     }
+
+
+
 
     public static void main(String[] args) {
         launch();
