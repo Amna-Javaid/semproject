@@ -1,5 +1,11 @@
 package com.example.semproject;
 
+import java.io.File;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -20,12 +26,17 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+
+
 public class HelloApplication extends Application {
+
+
+
+
     ArrayList<Person> person = new ArrayList<>();
     GridPane grid1 = new GridPane();
     Scene sc1 = new Scene(grid1, 500, 400, Color.LIGHTGRAY);
@@ -40,22 +51,11 @@ public class HelloApplication extends Application {
 
 
 
-
-
-
-
     @Override
     public void start(Stage stage) throws IOException {
 
+        loadUserData();
 
-        Person person1 = new Person("John Doe", "12345678-90", "john.doe@gmail.com", "password123", 25, "1234567890", "Male", false,false);
-        person.add(person1);
-        Person person2 = new Person("Jane Smith", "98765432-10", "jane.smith@gmail.com", "securePass", 30, "9876543210", "Female", false,false);
-        person.add(person2);
-        Person person3 = new Person("Bob Johnson", "56789012-34", "bob.johnson@gmail.com", "pass123", 40, "5678901234", "Male", false,false);
-        person.add(person3);
-        Person person4 = new Person("Alice Williams", "34567890-12", "alice.williams@gmail.com", "myPassword", 28, "3456789012", "Female", false,false);
-        person.add(person4);
 
 
         homeScreen(stage);
@@ -451,6 +451,7 @@ public class HelloApplication extends Application {
                 // Add the new person to the list
                 person.add(newPerson);
                 resultText.setText("Sign Up Successful");
+                saveUserData();
             }
             confirmButton.setStyle(
                     "-fx-border-color: black;" +
@@ -560,6 +561,8 @@ public class HelloApplication extends Application {
             userListGrid.setHgap(30);
             userListGrid.setVgap(20);
 
+
+
             Scene userListScene = new Scene(userListGrid,600,500);
             // Create TableView
             TableView<Person> tableView = new TableView<>();
@@ -582,11 +585,10 @@ public class HelloApplication extends Application {
             TableColumn<Person, Boolean> vaccinationStatusColumn2 = new TableColumn<>("Dose 2 Status");
             vaccinationStatusColumn2.setCellValueFactory(new PropertyValueFactory<>("vaccinated2"));
 
-
             tableView.getColumns().addAll(nameColumn, emailColumn, mobileColumn, cnicColumn, vaccinationStatusColumn,vaccinationStatusColumn2);
 
-            ObservableList<Person> observablePersonList = FXCollections.observableArrayList(person);
-            tableView.setItems(observablePersonList);
+            ObservableList<Person> observableUserList = FXCollections.observableArrayList(person);
+            tableView.setItems(observableUserList);
 
             userListGrid.add(new Region(), 0, 2);
 
@@ -1670,8 +1672,45 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
     }
+    private static final String USER_DATA_FILE = "src/main/resources/user_data.txt"; // Replace with your file path
+
+    private void loadUserData() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(USER_DATA_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] userData = line.split(";");
+                if (userData.length == 9) {
+                    Person newUser = new Person(userData[0], userData[1], userData[2], userData[3],
+                            Integer.parseInt(userData[4]), userData[5], userData[6],
+                            Boolean.parseBoolean(userData[7]), Boolean.parseBoolean(userData[8]));
+                    person.add(newUser);
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveUserData() {
+        File file = new File(USER_DATA_FILE);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            for (Person p : person) {
+                String userData = String.format("%s;%s;%s;%s;%d;%s;%s;%b;%b\n",
+                        p.getName(), p.getCnic(), p.getEmail(), p.getPassword(), p.getAge(),
+                        p.getMobileNumber(), p.getSex(), p.isVaccinated1(), p.isVaccinated2());
+                writer.write(userData);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        saveUserData(); // Save user data when the application stops
+    }
 
 
     public static void main(String[] args) {
