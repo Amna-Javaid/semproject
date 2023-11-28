@@ -1268,31 +1268,40 @@ public class HelloApplication extends Application {
                 stage.setScene(scene); // Set the scene to the initial scene (grid1)
                 stage.show();
             });
-            verify2.setStyle("-fx-background-color: derive(DARKBLUE, 20%); -fx-background-radius: 20;");
-            verify2.setTextFill(Color.WHITE);
-            verify2.setOnAction(v->{
-                String CNIC=cnictext.getText();
-                String code2=codetext.getText();
+            verify2.setOnAction(v -> {
+                String CNIC = cnictext.getText();
+                String code2 = codetext.getText();
                 int pCode2 = Integer.parseInt(code2);
                 boolean found = false;
-                for (Person person : person) {
 
-                    if (person.cnic.equals(CNIC) && person.code==pCode2) {
-                        Text vaccinated = new Text("You are verified ");
+                for (Person person : person) { // Assuming 'persons' is the list of Person objects
+
+                    if (person.cnic.equals(CNIC) && person.code == pCode2 && !person.isVaccinated1) {
+                        Text vaccinated = new Text("You are verified for the first dose");
                         vaccinated.setFont(Font.font("times new roman", 12));
                         grid7.add(vaccinated, 1, 5);
-                        person.isVaccinated1=true;
-                        found=true;
-                        break;
+                        person.isVaccinated1 = true;
+                        found = true;
                     }
-
                 }
+
+                if (!found) {
+                    for (Person person : person) {
+                        if (person.cnic.equals(CNIC) && person.code == pCode2 && person.isVaccinated1 && !person.isVaccinated2) {
+                            Text vaccinated2 = new Text("You are verified for the second dose");
+                            vaccinated2.setFont(Font.font("times new roman", 12));
+                            grid7.add(vaccinated2, 1, 6);
+                            person.isVaccinated2 = true;
+                            found = true;
+                        }
+                    }
+                }
+
                 if (!found) {
                     Text notVaccinated = new Text("Invalid code or CNIC");
                     notVaccinated.setFont(Font.font("Times New Roman", 12));
-                    grid7.add(notVaccinated, 1, 5);
+                    grid7.add(notVaccinated, 1, 7);
                 }
-
             });
 
 
@@ -1300,9 +1309,6 @@ public class HelloApplication extends Application {
             stage.show();
 
         });
-
-
-
 
 
         status1.setOnAction(c->{
@@ -1333,12 +1339,19 @@ public class HelloApplication extends Application {
                 String CNIC=cnictext.getText();
 
                 for (Person person : person) {
-                    if (person.cnic.equals(CNIC) && person.isVaccinated1) {
-                        Text vaccinated = new Text("You are already vaccinated.");
+                    if (person.cnic.equals(CNIC) && person.isVaccinated1 &&  !person.isVaccinated2) {
+                        Text vaccinated = new Text("You are already vaccinated with first dose .");
                         vaccinated.setFont(Font.font("times new roman", 12));
                         grid7.add(vaccinated, 1, 4);
+
                     }
-                    else if (person.cnic.equals(CNIC) && !person.isVaccinated1) {
+                    else if (person.cnic.equals(CNIC) && person.isVaccinated2 && person.isVaccinated1 ) {
+                        Text vaccinated = new Text("You are already vaccinated with both dose .");
+                        vaccinated.setFont(Font.font("times new roman", 12));
+                        grid7.add(vaccinated, 1, 4);
+
+                    }
+                    else if (person.cnic.equals(CNIC) && !person.isVaccinated1 && !person.isVaccinated2) {
 
                         Text notvaccinated=new Text("You are not vaccinated.");
                         notvaccinated.setFont(Font.font("times new roman",12));
@@ -1409,11 +1422,11 @@ public class HelloApplication extends Application {
                 String enteredCNIC = codetext.getText();
 
                 for (Person person : person ) {
-                    if (person.cnic.equals(enteredCNIC) && person.isVaccinated1) {
+                    if (person.cnic.equals(enteredCNIC) && person.isVaccinated1 && person.isVaccinated2) {
                         Text v1 = new Text("Please enter the correct CNIC");
                         grid2.add(v1, 0, 4);
                     }
-                    else if (person.cnic.equals(enteredCNIC) && !person.isVaccinated1){
+                    else if (person.cnic.equals(enteredCNIC) && !person.isVaccinated2){
 
                         GridPane grid3=new GridPane();
                         Scene scene3=new Scene(grid3,900,650);

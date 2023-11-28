@@ -1,3 +1,4 @@
 areesha;123445678990;areesha123@gmail.com;areesha123;23;03004163244;female;false;false
-umer;987654321;umer@gmail.com;umer123;23;03000000000;male;true;false
+umer;987654321;umer@gmail.com;umer123;23;03000000000;male;true;true
 madiha;09876543321;madiha@gmail.com;madiha123;12;03111111111;female;false;false
+amnah;43214321;amnah@gmail.com;amnah123;19;0312345678;female;true;false
